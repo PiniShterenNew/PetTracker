@@ -1,0 +1,64 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PetTracker PWA</title>
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#4CAF50"/>
+</head>
+<body>
+  <h1>PetTracker PWA Demo</h1>
+  <p id="status">Checking capabilities...</p>
+  <button onclick="requestPermissions()">Request Permissions</button>
+  <button onclick="sendNotification()">Send Test Notification</button>
+  <button onclick="getLocation()">Get Location</button>
+  <button onclick="syncData()">Trigger Background Sync</button>
+
+  <script>
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('service-worker.js')
+        .then(() => console.log('Service Worker Registered'));
+    }
+
+    function requestPermissions() {
+      Notification.requestPermission().then(status => {
+        alert("Notification permission: " + status);
+      });
+    }
+
+    function sendNotification() {
+      if (Notification.permission === "granted") {
+        navigator.serviceWorker.getRegistration().then(reg => {
+          reg.showNotification("PetTracker Notification", {
+            body: "This is a test notification.",
+            icon: "icon-192.png"
+          });
+        });
+      } else {
+        alert("Notifications are not allowed.");
+      }
+    }
+
+    function getLocation() {
+      if ("geolocation" in navigator) {
+        navigator.geolocation.getCurrentPosition(pos => {
+          alert("Lat: " + pos.coords.latitude + ", Lon: " + pos.coords.longitude);
+        }, err => {
+          alert("Error getting location: " + err.message);
+        });
+      } else {
+        alert("Geolocation not supported.");
+      }
+    }
+
+    function syncData() {
+      navigator.serviceWorker.ready.then(reg => {
+        reg.sync.register('sync-pets');
+        alert("Sync registered");
+      });
+    }
+  </script>
+</body>
+</html>
