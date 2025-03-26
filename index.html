@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -7,58 +6,372 @@
   <title>PetTracker PWA</title>
   <link rel="manifest" href="manifest.json">
   <meta name="theme-color" content="#4CAF50"/>
+  <link rel="apple-touch-icon" href="icon-192.png">
+  <style>
+    * {
+      box-sizing: border-box;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+    }
+    
+    body {
+      margin: 0;
+      padding: 16px;
+      background-color: #f5f5f5;
+      color: #333;
+      max-width: 100%;
+      overflow-x: hidden;
+    }
+    
+    .container {
+      max-width: 600px;
+      margin: 0 auto;
+      padding: 20px;
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+    
+    h1 {
+      color: #4CAF50;
+      text-align: center;
+      margin-top: 0;
+      font-size: 24px;
+    }
+    
+    .button-container {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin: 20px 0;
+    }
+    
+    button {
+      padding: 14px;
+      border: none;
+      border-radius: 8px;
+      background-color: #4CAF50;
+      color: white;
+      font-size: 16px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: background-color 0.3s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    
+    button:hover {
+      background-color: #3e8e41;
+    }
+    
+    button:active {
+      background-color: #357a38;
+    }
+    
+    button:disabled {
+      background-color: #cccccc;
+      cursor: not-allowed;
+    }
+    
+    .status-card {
+      padding: 15px;
+      border-radius: 8px;
+      background-color: #f0f9ff;
+      margin-bottom: 20px;
+      border-left: 4px solid #4CAF50;
+    }
+    
+    .footer {
+      text-align: center;
+      margin-top: 30px;
+      color: #666;
+      font-size: 14px;
+    }
+    
+    .icon {
+      margin-right: 8px;
+      width: 20px;
+      height: 20px;
+    }
+    
+    .offline-indicator {
+      display: none;
+      background-color: #ffecb3;
+      padding: 10px;
+      text-align: center;
+      border-radius: 8px;
+      margin-bottom: 16px;
+    }
+    
+    /* Add a loading indicator */
+    .loading-spinner {
+      border: 3px solid #f3f3f3;
+      border-top: 3px solid #4CAF50;
+      border-radius: 50%;
+      width: 20px;
+      height: 20px;
+      animation: spin 1s linear infinite;
+      display: inline-block;
+      margin-right: 8px;
+      vertical-align: middle;
+    }
+    
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+    
+    /* Toast notification */
+    .toast {
+      position: fixed;
+      bottom: 30px;
+      left: 50%;
+      transform: translateX(-50%);
+      background-color: #333;
+      color: white;
+      padding: 12px 20px;
+      border-radius: 8px;
+      display: none;
+      box-shadow: 0 3px 10px rgba(0,0,0,0.2);
+      z-index: 1000;
+    }
+  </style>
 </head>
 <body>
-  <h1>PetTracker PWA Demo</h1>
-  <p id="status">Checking capabilities...</p>
-  <button onclick="requestPermissions()">Request Permissions</button>
-  <button onclick="sendNotification()">Send Test Notification</button>
-  <button onclick="getLocation()">Get Location</button>
-  <button onclick="syncData()">Trigger Background Sync</button>
+  <div class="offline-indicator" id="offlineIndicator">
+    You are offline. Some features may be limited.
+  </div>
+  
+  <div class="container">
+    <h1>PetTracker</h1>
+    
+    <div class="status-card" id="status">
+      <div class="loading-spinner"></div> Checking capabilities...
+    </div>
+    
+    <div class="button-container">
+      <button id="permissionBtn" onclick="requestPermissions()">
+        <svg class="icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
+          <path d="M18.63 13A17.89 17.89 0 0 1 18 8"></path>
+          <path d="M6.26 6.26A5.86 5.86 0 0 0 6 8c0 7-3 9-3 9h14"></path>
+          <path d="M18 8a6 6 0 0 0-9.33-5"></path>
+          <line x1="1" y1="1" x2="23" y2="23"></line>
+        </svg>
+        Enable Notifications
+      </button>
+      
+      <button id="notificationBtn" onclick="sendNotification()" disabled>
+        <svg class="icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
+          <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
+        </svg>
+        Send Test Notification
+      </button>
+      
+      <button id="locationBtn" onclick="getLocation()">
+        <svg class="icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="10"></circle>
+          <polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"></polygon>
+        </svg>
+        Track Pet Location
+      </button>
+      
+      <button id="syncBtn" onclick="syncData()">
+        <svg class="icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M21.21 15.89A10 10 0 1 1 8 2.83"></path>
+          <path d="M22 12A10 10 0 0 0 12 2v10z"></path>
+        </svg>
+        Sync Pet Data
+      </button>
+    </div>
+    
+    <div class="footer">
+      PetTracker v1.1 - Install this app on your device
+    </div>
+  </div>
+  
+  <div class="toast" id="toast"></div>
 
   <script>
-    if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.register('service-worker.js')
-        .then(() => console.log('Service Worker Registered'));
+    // Check if the browser is online
+    function updateOnlineStatus() {
+      const offlineIndicator = document.getElementById('offlineIndicator');
+      if (navigator.onLine) {
+        offlineIndicator.style.display = 'none';
+      } else {
+        offlineIndicator.style.display = 'block';
+      }
     }
-
+    
+    // Initialize the UI based on capabilities
+    function initApp() {
+      const statusEl = document.getElementById('status');
+      const notificationBtn = document.getElementById('notificationBtn');
+      const permissionBtn = document.getElementById('permissionBtn');
+      
+      // Check if service worker is supported
+      if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.register('service-worker.js')
+          .then(() => {
+            console.log('Service Worker Registered');
+            statusEl.innerHTML = 'App ready to use! You can install it to your home screen.';
+          })
+          .catch(err => {
+            console.error('Service Worker registration failed:', err);
+            statusEl.innerHTML = 'Some features may not work properly. Please try again.';
+          });
+      } else {
+        statusEl.innerHTML = 'Your browser does not support all features.';
+      }
+      
+      // Check notification permission
+      if (Notification.permission === "granted") {
+        permissionBtn.textContent = "Notifications Enabled";
+        permissionBtn.disabled = true;
+        notificationBtn.disabled = false;
+      }
+      
+      // Listen for online/offline events
+      window.addEventListener('online', updateOnlineStatus);
+      window.addEventListener('offline', updateOnlineStatus);
+      
+      // Initial online status check
+      updateOnlineStatus();
+    }
+    
+    // Show toast message
+    function showToast(message, duration = 3000) {
+      const toast = document.getElementById('toast');
+      toast.textContent = message;
+      toast.style.display = 'block';
+      
+      setTimeout(() => {
+        toast.style.display = 'none';
+      }, duration);
+    }
+    
+    // Request notification permissions
     function requestPermissions() {
+      const notificationBtn = document.getElementById('notificationBtn');
+      const permissionBtn = document.getElementById('permissionBtn');
+      
       Notification.requestPermission().then(status => {
-        alert("Notification permission: " + status);
+        if (status === "granted") {
+          showToast("Notifications enabled!");
+          permissionBtn.textContent = "Notifications Enabled";
+          permissionBtn.disabled = true;
+          notificationBtn.disabled = false;
+        } else {
+          showToast("Notification permission denied");
+        }
       });
     }
-
+    
+    // Send test notification
     function sendNotification() {
       if (Notification.permission === "granted") {
         navigator.serviceWorker.getRegistration().then(reg => {
-          reg.showNotification("PetTracker Notification", {
-            body: "This is a test notification.",
-            icon: "icon-192.png"
-          });
+          const title = "PetTracker Alert";
+          const options = {
+            body: "Your pet is nearby! Tap to see details.",
+            icon: "icon-192.png",
+            badge: "icon-192.png",
+            vibrate: [200, 100, 200],
+            actions: [
+              { action: 'view', title: 'View Pet' },
+              { action: 'dismiss', title: 'Dismiss' }
+            ]
+          };
+          
+          reg.showNotification(title, options);
+          showToast("Notification sent!");
         });
       } else {
-        alert("Notifications are not allowed.");
+        showToast("Notifications are not allowed.");
       }
     }
-
+    
+    // Get current location
     function getLocation() {
+      showToast("Getting location...");
+      
       if ("geolocation" in navigator) {
         navigator.geolocation.getCurrentPosition(pos => {
-          alert("Lat: " + pos.coords.latitude + ", Lon: " + pos.coords.longitude);
+          const lat = pos.coords.latitude.toFixed(6);
+          const lon = pos.coords.longitude.toFixed(6);
+          showToast(`Location: ${lat}, ${lon}`);
         }, err => {
-          alert("Error getting location: " + err.message);
+          console.error("Error getting location:", err);
+          showToast("Error getting location. Please check permissions.");
+        }, {
+          enableHighAccuracy: true,
+          timeout: 10000,
+          maximumAge: 0
         });
       } else {
-        alert("Geolocation not supported.");
+        showToast("Geolocation not supported on this device.");
       }
     }
-
+    
+    // Trigger background sync
     function syncData() {
-      navigator.serviceWorker.ready.then(reg => {
-        reg.sync.register('sync-pets');
-        alert("Sync registered");
-      });
+      if ('serviceWorker' in navigator && 'SyncManager' in window) {
+        navigator.serviceWorker.ready.then(reg => {
+          reg.sync.register('sync-pets')
+            .then(() => {
+              showToast("Pet data will sync when online");
+            })
+            .catch(err => {
+              console.error('Sync registration failed:', err);
+              showToast("Sync failed. Try again later.");
+            });
+        });
+      } else {
+        // Fallback for browsers that don't support background sync
+        fetch('/sync', { 
+          method: 'POST', 
+          body: JSON.stringify({ data: 'pet data' }),
+          headers: {
+            'Content-Type': 'application/json'
+          }
+        })
+        .then(response => {
+          showToast("Data synced successfully");
+        })
+        .catch(err => {
+          showToast("Sync failed. Will retry when online.");
+        });
+      }
     }
+    
+    // Add to home screen prompt
+    let deferredPrompt;
+    window.addEventListener('beforeinstallprompt', (e) => {
+      e.preventDefault();
+      deferredPrompt = e;
+      
+      const footer = document.querySelector('.footer');
+      footer.innerHTML = '<strong>📱 Add PetTracker to your home screen!</strong>';
+      footer.style.color = '#4CAF50';
+      footer.style.cursor = 'pointer';
+      
+      footer.addEventListener('click', () => {
+        if (deferredPrompt) {
+          deferredPrompt.prompt();
+          deferredPrompt.userChoice.then((choiceResult) => {
+            if (choiceResult.outcome === 'accepted') {
+              footer.innerHTML = 'Thanks for installing PetTracker!';
+              footer.style.cursor = 'default';
+            }
+            deferredPrompt = null;
+          });
+        }
+      });
+    });
+    
+    // Initialize the app
+    document.addEventListener('DOMContentLoaded', initApp);
   </script>
 </body>
 </html>
