@@ -1,377 +1,513 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <title>PetTracker PWA</title>
   <link rel="manifest" href="manifest.json">
-  <meta name="theme-color" content="#4CAF50"/>
+  <meta name="theme-color" content="#4CAF50" />
   <link rel="apple-touch-icon" href="icon-192.png">
+  <link rel="apple-touch-icon" sizes="192x192" href="icon-192.png">
+  <link rel="apple-touch-icon" sizes="512x512" href="icon-512.png">
+  <!-- iOS meta tags for better PWA support -->
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="PetTracker">
+
+  <!-- iOS splash screens -->
+  <link rel="apple-touch-startup-image" href="splash-640x1136.png"
+    media="(device-width: 320px) and (device-height: 568px) and (-webkit-device-pixel-ratio: 2)">
+  <link rel="apple-touch-startup-image" href="splash-750x1334.png"
+    media="(device-width: 375px) and (device-height: 667px) and (-webkit-device-pixel-ratio: 2)">
+  <link rel="apple-touch-startup-image" href="splash-1242x2208.png"
+    media="(device-width: 414px) and (device-height: 736px) and (-webkit-device-pixel-ratio: 3)">
+  <link rel="apple-touch-startup-image" href="splash-1125x2436.png"
+    media="(device-width: 375px) and (device-height: 812px) and (-webkit-device-pixel-ratio: 3)">
+  <link rel="apple-touch-startup-image" href="splash-1242x2688.png"
+    media="(device-width: 414px) and (device-height: 896px) and (-webkit-device-pixel-ratio: 3)">
+
+  <!-- External CSS file -->
+  <link type="text/css" rel="stylesheet" href="style.css">
   <style>
-    * {
-      box-sizing: border-box;
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+    :root {
+      --theme-color: #4CAF50;
     }
-    
+
+    /* iOS safe area fixes */
     body {
-      margin: 0;
-      padding: 16px;
-      background-color: #f5f5f5;
-      color: #333;
-      max-width: 100%;
-      overflow-x: hidden;
+      padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
     }
-    
-    .container {
-      max-width: 600px;
-      margin: 0 auto;
-      padding: 20px;
-      background: white;
-      border-radius: 12px;
-      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-    }
-    
-    h1 {
-      color: #4CAF50;
-      text-align: center;
-      margin-top: 0;
-      font-size: 24px;
-    }
-    
-    .button-container {
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
-      margin: 20px 0;
-    }
-    
-    button {
-      padding: 14px;
-      border: none;
-      border-radius: 8px;
-      background-color: #4CAF50;
-      color: white;
-      font-size: 16px;
-      font-weight: 500;
-      cursor: pointer;
-      transition: background-color 0.3s;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-    
-    button:hover {
-      background-color: #3e8e41;
-    }
-    
-    button:active {
-      background-color: #357a38;
-    }
-    
-    button:disabled {
-      background-color: #cccccc;
-      cursor: not-allowed;
-    }
-    
-    .status-card {
-      padding: 15px;
-      border-radius: 8px;
-      background-color: #f0f9ff;
-      margin-bottom: 20px;
-      border-left: 4px solid #4CAF50;
-    }
-    
-    .footer {
-      text-align: center;
-      margin-top: 30px;
-      color: #666;
-      font-size: 14px;
-    }
-    
-    .icon {
-      margin-right: 8px;
-      width: 20px;
-      height: 20px;
-    }
-    
-    .offline-indicator {
+
+    /* iOS installation banner */
+    .ios-install-banner {
       display: none;
-      background-color: #ffecb3;
-      padding: 10px;
-      text-align: center;
-      border-radius: 8px;
-      margin-bottom: 16px;
-    }
-    
-    /* Add a loading indicator */
-    .loading-spinner {
-      border: 3px solid #f3f3f3;
-      border-top: 3px solid #4CAF50;
-      border-radius: 50%;
-      width: 20px;
-      height: 20px;
-      animation: spin 1s linear infinite;
-      display: inline-block;
-      margin-right: 8px;
-      vertical-align: middle;
-    }
-    
-    @keyframes spin {
-      0% { transform: rotate(0deg); }
-      100% { transform: rotate(360deg); }
-    }
-    
-    /* Toast notification */
-    .toast {
       position: fixed;
-      bottom: 30px;
-      left: 50%;
-      transform: translateX(-50%);
-      background-color: #333;
-      color: white;
-      padding: 12px 20px;
-      border-radius: 8px;
-      display: none;
-      box-shadow: 0 3px 10px rgba(0,0,0,0.2);
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background-color: rgba(255, 255, 255, 0.95);
+      padding: 15px;
+      box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
       z-index: 1000;
+      text-align: center;
+      font-size: 14px;
+      border-top: 1px solid #ddd;
+    }
+
+    .ios-install-banner p {
+      margin: 0 0 10px 0;
+    }
+
+    .close-banner {
+      position: absolute;
+      right: 10px;
+      top: 10px;
+      background: none;
+      border: none;
+      font-size: 20px;
+      cursor: pointer;
+      color: #666;
     }
   </style>
 </head>
+
 <body>
   <div class="offline-indicator" id="offlineIndicator">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <line x1="1" y1="1" x2="23" y2="23"></line>
+      <path d="M16.72 11.06A10.94 10.94 0 0 1 19 12.55"></path>
+      <path d="M5 12.55a10.94 10.94 0 0 1 5.17-2.39"></path>
+      <path d="M10.71 5.05A16 16 0 0 1 22.58 9"></path>
+      <path d="M1.42 9a15.91 15.91 0 0 1 4.7-2.88"></path>
+      <path d="M8.53 16.11a6 6 0 0 1 6.95 0"></path>
+      <line x1="12" y1="20" x2="12.01" y2="20"></line>
+    </svg>
     You are offline. Some features may be limited.
   </div>
-  
-  <div class="container">
+
+  <!-- iOS installation banner -->
+  <div class="ios-install-banner" id="iosInstallBanner">
+    <button class="close-banner" onclick="closeInstallBanner()">×</button>
+    <p><strong>Install PetTracker on your iPhone:</strong></p>
+    <p>Tap <img src="share-icon.png" width="20" height="20" style="vertical-align: middle;"> and then "Add to Home
+      Screen"</p>
+  </div>
+
+  <div class="header">
     <h1>PetTracker</h1>
-    
-    <div class="status-card" id="status">
-      <div class="loading-spinner"></div> Checking capabilities...
+  </div>
+
+  <div class="tab-bar">
+    <div class="tab active" data-tab="home">Home</div>
+    <div class="tab" data-tab="game">Game</div>
+    <div class="tab" data-tab="track">Track</div>
+    <div class="tab" data-tab="settings">Settings</div>
+  </div>
+
+  <div class="container">
+    <!-- Home Tab -->
+    <div class="tab-content active" id="home-content">
+      <div class="status-card" id="status">
+        <div class="loading-spinner"></div> Initializing app...
+      </div>
+
+      <div class="card">
+        <div class="pet-avatar">
+          <div style="font-size: 40px;">🐕</div>
+        </div>
+        <div class="pet-name">Max</div>
+        <div class="pet-info">Golden Retriever • 3 years old</div>
+
+        <div class="stat-container">
+          <div class="stat-item">
+            <div class="stat-value">7</div>
+            <div class="stat-label">WALKS</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-value">1.2</div>
+            <div class="stat-label">KM TODAY</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-value">32</div>
+            <div class="stat-label">MINUTES</div>
+          </div>
+        </div>
+
+        <div class="button-container">
+          <button id="trackBtn" onclick="getLocation()">
+            <svg class="icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+              stroke-width="2">
+              <circle cx="12" cy="12" r="10"></circle>
+              <polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"></polygon>
+            </svg>
+            Track Location
+          </button>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3 class="section-title">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M11 3a8 8 0 0 0-8 8v6a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-6a8 8 0 0 0-8-8h-2z"></path>
+            <path d="M10 3v-1h4v1"></path>
+          </svg>
+          Latest Notifications
+        </h3>
+        <div id="notifications-list">
+          <p>No recent notifications.</p>
+        </div>
+        <div class="button-container">
+          <button class="button-alt" id="permissionBtn" onclick="requestPermissions()">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
+              <path d="M18.63 13A17.89 17.89 0 0 1 18 8"></path>
+              <path d="M6.26 6.26A5.86 5.86 0 0 0 6 8c0 7-3 9-3 9h14"></path>
+              <path d="M18 8a6 6 0 0 0-9.33-5"></path>
+              <line x1="1" y1="1" x2="23" y2="23"></line>
+            </svg>
+            Enable Notifications
+          </button>
+          <button id="notificationBtn" onclick="sendNotification()" disabled>
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
+              <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
+            </svg>
+            Send Test Notification
+          </button>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3 class="section-title">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M17 18a5 5 0 0 0-10 0"></path>
+            <line x1="12" y1="2" x2="12" y2="9"></line>
+            <line x1="4.22" y1="10.22" x2="5.64" y2="11.64"></line>
+            <line x1="1" y1="18" x2="3" y2="18"></line>
+            <line x1="21" y1="18" x2="23" y2="18"></line>
+            <line x1="18.36" y1="11.64" x2="19.78" y2="10.22"></line>
+            <line x1="23" y1="22" x2="1" y2="22"></line>
+            <polyline points="8 6 12 2 16 6"></polyline>
+          </svg>
+          Weather for Walks
+        </h3>
+        <div class="weather-container" id="weather-info">
+          <div class="weather-temp">--°C</div>
+          <div class="weather-desc">Loading weather...</div>
+        </div>
+        <div class="button-container">
+          <button class="button-alt" onclick="refreshWeather()">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M21.5 2v6h-6"></path>
+              <path d="M2.5 12a10 10 0 0 1 15-8l4 4"></path>
+              <path d="M2.5 22v-6h6"></path>
+              <path d="M22 12.5a10 10 0 0 1-15 8l-4-4"></path>
+            </svg>
+            Refresh Weather
+          </button>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3 class="section-title">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+            <line x1="8" y1="12" x2="16" y2="12"></line>
+            <line x1="12" y1="8" x2="12" y2="16"></line>
+          </svg>
+          Pet Gallery
+        </h3>
+        <div class="pet-collage">
+          <div class="collage-item"></div>
+          <div class="collage-item"></div>
+          <div class="collage-item"></div>
+          <div class="collage-item"></div>
+          <div class="collage-item"></div>
+          <div class="collage-item"></div>
+        </div>
+        <div class="button-container">
+          <button class="button-alt" onclick="openCamera()">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path>
+              <circle cx="12" cy="13" r="4"></circle>
+            </svg>
+            Take a Photo
+          </button>
+          <button onclick="toggleAR()">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="12" cy="12" r="2"></circle>
+              <path
+                d="M16.24 7.76a6 6 0 0 1 0 8.49m-8.48-.01a6 6 0 0 1 0-8.49m11.31-2.82a10 10 0 0 1 0 14.14m-14.14 0a10 10 0 0 1 0-14.14">
+              </path>
+            </svg>
+            AR Pet View
+          </button>
+        </div>
+      </div>
     </div>
-    
-    <div class="button-container">
-      <button id="permissionBtn" onclick="requestPermissions()">
-        <svg class="icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
-          <path d="M18.63 13A17.89 17.89 0 0 1 18 8"></path>
-          <path d="M6.26 6.26A5.86 5.86 0 0 0 6 8c0 7-3 9-3 9h14"></path>
-          <path d="M18 8a6 6 0 0 0-9.33-5"></path>
-          <line x1="1" y1="1" x2="23" y2="23"></line>
-        </svg>
-        Enable Notifications
-      </button>
-      
-      <button id="notificationBtn" onclick="sendNotification()" disabled>
-        <svg class="icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
-          <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
-        </svg>
-        Send Test Notification
-      </button>
-      
-      <button id="locationBtn" onclick="getLocation()">
-        <svg class="icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <circle cx="12" cy="12" r="10"></circle>
-          <polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"></polygon>
-        </svg>
-        Track Pet Location
-      </button>
-      
-      <button id="syncBtn" onclick="syncData()">
-        <svg class="icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M21.21 15.89A10 10 0 1 1 8 2.83"></path>
-          <path d="M22 12A10 10 0 0 0 12 2v10z"></path>
-        </svg>
-        Sync Pet Data
-      </button>
+
+    <!-- Game Tab -->
+    <div class="tab-content" id="game-content">
+      <div class="card">
+        <h3 class="section-title">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="2" y="4" width="20" height="16" rx="2"></rect>
+            <path d="M9 12h.01"></path>
+            <path d="M15 12h.01"></path>
+            <line x1="9" y1="16" x2="15" y2="16"></line>
+          </svg>
+          Pet Catch Game
+        </h3>
+        <p>Help your pet catch treats! Move your pet with the buttons below.</p>
+        <div id="game-container">
+          <canvas id="game-canvas" width="400" height="300"></canvas>
+        </div>
+        <div class="score-display">Score: <span id="game-score">0</span></div>
+        <div class="game-controls">
+          <button class="game-btn" id="game-left">⬅️</button>
+          <button class="game-btn" id="game-right">➡️</button>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3 class="section-title">Game Stats</h3>
+        <div class="stat-container">
+          <div class="stat-item">
+            <div class="stat-value" id="high-score">0</div>
+            <div class="stat-label">HIGH SCORE</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-value" id="games-played">0</div>
+            <div class="stat-label">GAMES PLAYED</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-value" id="treats-caught">0</div>
+            <div class="stat-label">TREATS CAUGHT</div>
+          </div>
+        </div>
+        <div class="button-container">
+          <button onclick="resetGame()">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M21.5 2v6h-6"></path>
+              <path d="M2.5 12a10 10 0 0 1 15-8l4 4"></path>
+              <path d="M2.5 22v-6h6"></path>
+              <path d="M22 12.5a10 10 0 0 1-15 8l-4-4"></path>
+            </svg>
+            Reset Game
+          </button>
+        </div>
+      </div>
     </div>
-    
-    <div class="footer">
-      PetTracker v1.1 - Install this app on your device
+
+    <!-- Track Tab -->
+    <div class="tab-content" id="track-content">
+      <div class="card">
+        <h3 class="section-title">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="10"></circle>
+            <polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"></polygon>
+          </svg>
+          Pet Location
+        </h3>
+        <div id="map-placeholder"
+          style="background-color: #f0f0f0; height: 200px; border-radius: 8px; display: flex; align-items: center; justify-content: center;">
+          Location map will appear here
+        </div>
+        <div id="location-details" style="margin-top: 15px; font-size: 14px; color: #666;">
+          No location data available yet
+        </div>
+        <div class="button-container">
+          <button onclick="getDetailedLocation()">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="12" cy="12" r="10"></circle>
+              <polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"></polygon>
+            </svg>
+            Get Current Location
+          </button>
+          <button class="button-alt" onclick="setupGeofence()">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+              <line x1="3" y1="9" x2="21" y2="9"></line>
+              <line x1="9" y1="21" x2="9" y2="9"></line>
+            </svg>
+            Setup Safe Zone
+          </button>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3 class="section-title">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline>
+          </svg>
+          Activity History
+        </h3>
+        <div id="activity-placeholder"
+          style="background-color: #f0f0f0; height: 150px; border-radius: 8px; margin-bottom: 15px;"></div>
+        <div class="button-container">
+          <button id="syncBtn" onclick="syncData()">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M21.21 15.89A10 10 0 1 1 8 2.83"></path>
+              <path d="M22 12A10 10 0 0 0 12 2v10z"></path>
+            </svg>
+            Sync Activity Data
+          </button>
+          <button class="button-alt" onclick="shareActivity()">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="18" cy="5" r="3"></circle>
+              <circle cx="6" cy="12" r="3"></circle>
+              <circle cx="18" cy="19" r="3"></circle>
+              <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line>
+              <line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line>
+            </svg>
+            Share Activity
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Settings Tab -->
+    <div class="tab-content" id="settings-content">
+      <div class="card">
+        <h3 class="section-title">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="3"></circle>
+            <path
+              d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z">
+            </path>
+          </svg>
+          App Settings
+        </h3>
+
+        <div class="setting-item">
+          <div>Dark Mode</div>
+          <label class="switch">
+            <input type="checkbox" id="darkModeToggle">
+            <span class="slider"></span>
+          </label>
+        </div>
+
+        <div class="setting-item">
+          <div>Notifications</div>
+          <label class="switch">
+            <input type="checkbox" id="notificationsToggle" checked>
+            <span class="slider"></span>
+          </label>
+        </div>
+
+        <div class="setting-item">
+          <div>Background Tracking</div>
+          <label class="switch">
+            <input type="checkbox" id="trackingToggle">
+            <span class="slider"></span>
+          </label>
+        </div>
+
+        <div class="setting-item">
+          <div>Sound Effects</div>
+          <label class="switch">
+            <input type="checkbox" id="soundToggle" checked>
+            <span class="slider"></span>
+          </label>
+        </div>
+
+        <h3 class="section-title" style="margin-top: 20px;">App Theme</h3>
+        <div>Choose your app theme color:</div>
+        <div class="color-options">
+          <div class="color-option selected" style="background-color: #4CAF50;" data-color="#4CAF50"></div>
+          <div class="color-option" style="background-color: #2196F3;" data-color="#2196F3"></div>
+          <div class="color-option" style="background-color: #9C27B0;" data-color="#9C27B0"></div>
+          <div class="color-option" style="background-color: #FF5722;" data-color="#FF5722"></div>
+          <div class="color-option" style="background-color: #795548;" data-color="#795548"></div>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3 class="section-title">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+            <circle cx="9" cy="7" r="4"></circle>
+            <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+            <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+          </svg>
+          Pet Profile
+        </h3>
+
+        <div class="setting-item">
+          <div>Pet Name</div>
+          <input type="text" id="petName" value="Max" style="padding: 8px; border-radius: 4px; border: 1px solid #ddd;">
+        </div>
+
+        <div class="setting-item">
+          <div>Pet Type</div>
+          <select id="petType" style="padding: 8px; border-radius: 4px; border: 1px solid #ddd;">
+            <option value="dog">Dog</option>
+            <option value="cat">Cat</option>
+            <option value="bird">Bird</option>
+            <option value="other">Other</option>
+          </select>
+        </div>
+
+        <div class="setting-item">
+          <div>Pet Age</div>
+          <input type="number" id="petAge" value="3" min="0" max="30"
+            style="padding: 8px; border-radius: 4px; border: 1px solid #ddd;">
+        </div>
+
+        <div class="button-container">
+          <button onclick="savePetProfile()">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path>
+              <polyline points="17 21 17 13 7 13 7 21"></polyline>
+              <polyline points="7 3 7 8 15 8"></polyline>
+            </svg>
+            Save Profile
+          </button>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3 class="section-title">About App</h3>
+        <p>PetTracker v1.1</p>
+        <p>A progressive web app for tracking and playing with your pet.</p>
+        <div class="button-container">
+          <button id="install-button" class="button-alt">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+              <polyline points="7 10 12 15 17 10"></polyline>
+              <line x1="12" y1="15" x2="12" y2="3"></line>
+            </svg>
+            Install App
+          </button>
+        </div>
+      </div>
     </div>
   </div>
-  
+
+  <!-- AR Overlay -->
+  <div class="ar-overlay" id="ar-overlay">
+    <div class="ar-content" id="ar-content">
+      <div style="text-align: center; color: white; padding-top: 100px;">
+        AR Pet View
+      </div>
+    </div>
+    <div class="ar-buttons">
+      <button class="ar-close" onclick="toggleAR()">✕</button>
+    </div>
+  </div>
+
   <div class="toast" id="toast"></div>
 
-  <script>
-    // Check if the browser is online
-    function updateOnlineStatus() {
-      const offlineIndicator = document.getElementById('offlineIndicator');
-      if (navigator.onLine) {
-        offlineIndicator.style.display = 'none';
-      } else {
-        offlineIndicator.style.display = 'block';
-      }
-    }
-    
-    // Initialize the UI based on capabilities
-    function initApp() {
-      const statusEl = document.getElementById('status');
-      const notificationBtn = document.getElementById('notificationBtn');
-      const permissionBtn = document.getElementById('permissionBtn');
-      
-      // Check if service worker is supported
-      if ('serviceWorker' in navigator) {
-        navigator.serviceWorker.register('service-worker.js')
-          .then(() => {
-            console.log('Service Worker Registered');
-            statusEl.innerHTML = 'App ready to use! You can install it to your home screen.';
-          })
-          .catch(err => {
-            console.error('Service Worker registration failed:', err);
-            statusEl.innerHTML = 'Some features may not work properly. Please try again.';
-          });
-      } else {
-        statusEl.innerHTML = 'Your browser does not support all features.';
-      }
-      
-      // Check notification permission
-      if (Notification.permission === "granted") {
-        permissionBtn.textContent = "Notifications Enabled";
-        permissionBtn.disabled = true;
-        notificationBtn.disabled = false;
-      }
-      
-      // Listen for online/offline events
-      window.addEventListener('online', updateOnlineStatus);
-      window.addEventListener('offline', updateOnlineStatus);
-      
-      // Initial online status check
-      updateOnlineStatus();
-    }
-    
-    // Show toast message
-    function showToast(message, duration = 3000) {
-      const toast = document.getElementById('toast');
-      toast.textContent = message;
-      toast.style.display = 'block';
-      
-      setTimeout(() => {
-        toast.style.display = 'none';
-      }, duration);
-    }
-    
-    // Request notification permissions
-    function requestPermissions() {
-      const notificationBtn = document.getElementById('notificationBtn');
-      const permissionBtn = document.getElementById('permissionBtn');
-      
-      Notification.requestPermission().then(status => {
-        if (status === "granted") {
-          showToast("Notifications enabled!");
-          permissionBtn.textContent = "Notifications Enabled";
-          permissionBtn.disabled = true;
-          notificationBtn.disabled = false;
-        } else {
-          showToast("Notification permission denied");
-        }
-      });
-    }
-    
-    // Send test notification
-    function sendNotification() {
-      if (Notification.permission === "granted") {
-        navigator.serviceWorker.getRegistration().then(reg => {
-          const title = "PetTracker Alert";
-          const options = {
-            body: "Your pet is nearby! Tap to see details.",
-            icon: "icon-192.png",
-            badge: "icon-192.png",
-            vibrate: [200, 100, 200],
-            actions: [
-              { action: 'view', title: 'View Pet' },
-              { action: 'dismiss', title: 'Dismiss' }
-            ]
-          };
-          
-          reg.showNotification(title, options);
-          showToast("Notification sent!");
-        });
-      } else {
-        showToast("Notifications are not allowed.");
-      }
-    }
-    
-    // Get current location
-    function getLocation() {
-      showToast("Getting location...");
-      
-      if ("geolocation" in navigator) {
-        navigator.geolocation.getCurrentPosition(pos => {
-          const lat = pos.coords.latitude.toFixed(6);
-          const lon = pos.coords.longitude.toFixed(6);
-          showToast(`Location: ${lat}, ${lon}`);
-        }, err => {
-          console.error("Error getting location:", err);
-          showToast("Error getting location. Please check permissions.");
-        }, {
-          enableHighAccuracy: true,
-          timeout: 10000,
-          maximumAge: 0
-        });
-      } else {
-        showToast("Geolocation not supported on this device.");
-      }
-    }
-    
-    // Trigger background sync
-    function syncData() {
-      if ('serviceWorker' in navigator && 'SyncManager' in window) {
-        navigator.serviceWorker.ready.then(reg => {
-          reg.sync.register('sync-pets')
-            .then(() => {
-              showToast("Pet data will sync when online");
-            })
-            .catch(err => {
-              console.error('Sync registration failed:', err);
-              showToast("Sync failed. Try again later.");
-            });
-        });
-      } else {
-        // Fallback for browsers that don't support background sync
-        fetch('/sync', { 
-          method: 'POST', 
-          body: JSON.stringify({ data: 'pet data' }),
-          headers: {
-            'Content-Type': 'application/json'
-          }
-        })
-        .then(response => {
-          showToast("Data synced successfully");
-        })
-        .catch(err => {
-          showToast("Sync failed. Will retry when online.");
-        });
-      }
-    }
-    
-    // Add to home screen prompt
-    let deferredPrompt;
-    window.addEventListener('beforeinstallprompt', (e) => {
-      e.preventDefault();
-      deferredPrompt = e;
-      
-      const footer = document.querySelector('.footer');
-      footer.innerHTML = '<strong>📱 Add PetTracker to your home screen!</strong>';
-      footer.style.color = '#4CAF50';
-      footer.style.cursor = 'pointer';
-      
-      footer.addEventListener('click', () => {
-        if (deferredPrompt) {
-          deferredPrompt.prompt();
-          deferredPrompt.userChoice.then((choiceResult) => {
-            if (choiceResult.outcome === 'accepted') {
-              footer.innerHTML = 'Thanks for installing PetTracker!';
-              footer.style.cursor = 'default';
-            }
-            deferredPrompt = null;
-          });
-        }
-      });
-    });
-    
-    // Initialize the app
-    document.addEventListener('DOMContentLoaded', initApp);
-  </script>
+  <footer>
+    PetTracker PWA • Made with ❤️ for your pets
+  </footer>
+
+  <!-- External JavaScript files -->
+  <script src="app.js"></script>
+  <script src="game.js"></script>
+  <script src="ios-fixes.js"></script>
+
 </body>
+
 </html>

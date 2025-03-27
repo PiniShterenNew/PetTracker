@@ -2,7 +2,7 @@
   "name": "PetTracker - Track Your Pets",
   "short_name": "PetTracker",
   "description": "A mobile app to track and manage your pets' location and activities",
-  "start_url": "/index.html",
+  "start_url": "/index.html?source=pwa",
   "display": "standalone",
   "orientation": "portrait",
   "background_color": "#ffffff",
@@ -24,6 +24,46 @@
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "any"
+    },
+    {
+      "src": "apple-icon-120.png",
+      "sizes": "120x120",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "apple-icon-152.png",
+      "sizes": "152x152",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "apple-icon-167.png",
+      "sizes": "167x167",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "apple-icon-180.png",
+      "sizes": "180x180",
+      "type": "image/png",
+      "purpose": "any"
+    }
+  ],
+  "screenshots": [
+    {
+      "src": "screenshot1.jpg",
+      "sizes": "1170x2532",
+      "type": "image/jpg",
+      "platform": "narrow",
+      "label": "Home screen of PetTracker"
+    },
+    {
+      "src": "screenshot2.jpg",
+      "sizes": "1170x2532",
+      "type": "image/jpg",
+      "platform": "narrow",
+      "label": "Pet game in PetTracker"
     }
   ],
   "shortcuts": [
@@ -39,6 +79,13 @@
       "short_name": "Sync",
       "description": "Sync your pet's data",
       "url": "/?action=sync",
+      "icons": [{ "src": "icon-192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "Play Game",
+      "short_name": "Game",
+      "description": "Play the pet game",
+      "url": "/?action=game",
       "icons": [{ "src": "icon-192.png", "sizes": "192x192" }]
     }
   ]
